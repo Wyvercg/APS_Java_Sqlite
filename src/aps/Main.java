@@ -1,6 +1,5 @@
 
 package aps;
-// kjhlhkjghgjjlhhfhjfhjfjflj
 
 public class Main {
 
