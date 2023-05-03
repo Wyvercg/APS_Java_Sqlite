@@ -94,7 +94,6 @@ public class TelaLogin extends javax.swing.JFrame {
             rs = pst.executeQuery();
         
         if(rs.next()){
-
             JOptionPane.showMessageDialog(null, "Login Bem sucedido");
         } else {
             JOptionPane.showMessageDialog(null, "Login falhou, verifique seus dados e tente novamente");
