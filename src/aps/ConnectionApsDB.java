@@ -16,12 +16,12 @@ public class ConnectionApsDB {
         
             Class.forName("org.sqlite.JDBC");
             Connection con = DriverManager.getConnection("jdbc:sqlite:APSDB.db");
-            System.out.println("Conexao com o banco de dados de login bem sucedida");
+            System.out.println("Conexao com o banco de dados da APS bem sucedida");
             return con;
         }
         
         catch(Exception e){
-            System.out.println("Connection Failed " + e);
+            System.out.println("Conexao falhou" + e);
             return null;
         }
         
