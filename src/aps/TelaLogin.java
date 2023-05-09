@@ -7,7 +7,7 @@ package aps;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
-public class TelaLogin extends javax.swing.JFrame {
+public class TelaLogin extends javax.swing.JFrame implements Usuario {
 
     Connection con = null;
     PreparedStatement pst = null;
@@ -190,4 +190,9 @@ public class TelaLogin extends javax.swing.JFrame {
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void UsuarioAtivo() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
