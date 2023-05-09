@@ -107,7 +107,7 @@ public class TelaLogin extends javax.swing.JFrame {
 
     private void loginbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginbuttonActionPerformed
 
-        String sql = "SELECT * from Usuario WHERE login_usuario LIKE ? AND senha_usuario LIKE ?; ";
+        String sql = "SELECT * from Usuario WHERE Login_Usuario LIKE ? AND Senha_Usuario LIKE ?; ";
         try{
             pst = con.prepareStatement(sql);
             pst.setString(1, txtUsuario.getText());
