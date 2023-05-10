@@ -27,7 +27,7 @@ public class TelaDoar extends javax.swing.JFrame {
     private void Update_table(){
         
         try{
-        String sql = "select * from Lista_Int_Doacao;";
+        String sql = "select * from Lista_Int_Doacao where ID_usuario;";
         pst=con.prepareStatement(sql);
         rs=pst.executeQuery();
         jTableListaAlimentos.setModel(DbUtils.resultSetToTableModel(rs));
