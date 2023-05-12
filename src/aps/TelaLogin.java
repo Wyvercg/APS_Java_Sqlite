@@ -7,7 +7,8 @@ package aps;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
-public class TelaLogin extends javax.swing.JFrame implements Usuario {
+public class TelaLogin extends javax.swing.JFrame {
+    
 
     Connection con = null;
     PreparedStatement pst = null;
@@ -19,6 +20,9 @@ public class TelaLogin extends javax.swing.JFrame implements Usuario {
         initComponents();
         con = ConnectionApsDB.ConnectionDB();
     }
+    
+    
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -30,7 +34,7 @@ public class TelaLogin extends javax.swing.JFrame implements Usuario {
         loginbutton = new javax.swing.JButton();
         exitbutton = new javax.swing.JButton();
         txtPassword = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
+        btnCadastrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,10 +56,10 @@ public class TelaLogin extends javax.swing.JFrame implements Usuario {
             }
         });
 
-        jButton1.setText("CADASTRAR");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnCadastrar.setText("CADASTRAR");
+        btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnCadastrarActionPerformed(evt);
             }
         });
 
@@ -66,7 +70,7 @@ public class TelaLogin extends javax.swing.JFrame implements Usuario {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCadastrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -97,7 +101,7 @@ public class TelaLogin extends javax.swing.JFrame implements Usuario {
                     .addComponent(loginbutton)
                     .addComponent(exitbutton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -106,30 +110,47 @@ public class TelaLogin extends javax.swing.JFrame implements Usuario {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginbuttonActionPerformed
-
-        String sql = "SELECT * from Usuario WHERE Login_Usuario LIKE ? AND Senha_Usuario LIKE ?; ";
-        try{
-            pst = con.prepareStatement(sql);
+        
+    try {
+        String sql = "SELECT * FROM Usuario WHERE Login_Usuario LIKE ? AND Senha_Usuario LIKE ?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, txtUsuario.getText());
             pst.setString(2, txtPassword.getText());
-            rs = pst.executeQuery();
-        
-        if(rs.next()){
-            TelaPrincipal TP = new TelaPrincipal();
-            TP.setVisible(true);
-            JOptionPane.showMessageDialog(null, "Login Bem sucedido");
-            TelaLogin.this.dispose();
-            
-        } else {
-            JOptionPane.showMessageDialog(null, "Login falhou, verifique seus dados e tente novamente");
-        }    
-            
-        }
-        catch (Exception e){
-        
-        }
+            try (ResultSet rs = pst.executeQuery()) {
+                System.out.println(rs);
+                if (rs.next()) {
+                    String sql2 = "SELECT ID_Usuario FROM Usuario WHERE Login_Usuario LIKE ?;";
+                    try (PreparedStatement pst2 = con.prepareStatement(sql2)) {
+                        pst2.setString(1, txtUsuario.getText());
+                        try (ResultSet rs2 = pst2.executeQuery()) {
+                            if (rs2.next()) {
+                                int idUsuario = rs2.getInt("ID_Usuario");
+                                Main.IdUsuario = String.valueOf(idUsuario);
+                            }
+                        }
+                    } catch (Exception e) {
+                        // Trate a exceção apropriadamente
+                    }
 
+                    String usuarioDigitado = txtUsuario.getText();
+                    Main.Usuario = usuarioDigitado;
 
+                    TelaPrincipal TP = new TelaPrincipal();
+                    TP.setVisible(true);
+                    JOptionPane.showMessageDialog(null, "Login bem sucedido");
+                    TelaLogin.this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Login falhou, verifique seus dados e tente novamente");
+                }
+            }
+        } catch (Exception e) {
+            // Trate a exceção apropriadamente
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro no login: " + e.getMessage());
+        e.printStackTrace();
+    }
+ 
 
 
 
@@ -141,13 +162,13 @@ public class TelaLogin extends javax.swing.JFrame implements Usuario {
         System.exit(0);
     }//GEN-LAST:event_exitbuttonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
         // TODO add your handling code here:
-        this.toBack();
         TelaCadastro TC = new TelaCadastro();
         TC.setVisible(true);
         TC.toFront();
-    }//GEN-LAST:event_jButton1ActionPerformed
+
+    }//GEN-LAST:event_btnCadastrarActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -182,17 +203,12 @@ public class TelaLogin extends javax.swing.JFrame implements Usuario {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCadastrar;
     private javax.swing.JButton exitbutton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JButton loginbutton;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public void UsuarioAtivo() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }

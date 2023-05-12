@@ -19,7 +19,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 public class TelaPrincipal extends javax.swing.JFrame {
 
     String UsuarioAtivo = Main.Usuario;
-    String IdUsuarioAtivo = "2";
+    String IdUsuarioAtivo = Main.IdUsuario;
 
     Connection con = null;
     PreparedStatement pst = null;
@@ -30,8 +30,57 @@ public class TelaPrincipal extends javax.swing.JFrame {
         con = ConnectionApsDB.ConnectionDB();
         lbUsuarioAtivo.setText(UsuarioAtivo);
         updateTable();
+        AtualizarDados();
     }
+    
+    public void AtualizarDados(){
+        btnGerarGraficos.doClick();
+        updateTable();
+    
+    }
+    
+    
+    private void AtualizarGraficoAlimentos(){
+            try {
+            String sql = "SELECT a.Nome_Alimento, SUM(l.Qtd_List_int_Doacao) AS Quantidade " +
+                         "FROM Alimentos a " +
+                         "JOIN Lista_Int_Doacao l ON a.ID_Alimento = l.ID_Alimento_List_Int_Doacao " +
+                         "JOIN Transacao_Rec_Int_Doacao t ON l.ID_Int_Doacao_List = t.ID_Int_Doacao_Transac_Rec " +
+                         "GROUP BY a.Nome_Alimento";
 
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+            while (rs.next()) {
+                String nomeAlimento = rs.getString("Nome_Alimento");
+                int quantidade = rs.getInt("Quantidade");
+                dataset.addValue(quantidade, "Quantidade", nomeAlimento);
+            }
+
+            JFreeChart chart = ChartFactory.createBarChart(
+                    "Total de Alimentos Doados!", // Título do gráfico
+                    "Alimento", // Rótulo do eixo X
+                    "Quantidade", // Rótulo do eixo Y
+                    dataset, // Conjunto de dados
+                    PlotOrientation.VERTICAL, // Orientação do gráfico
+                    true, // Exibir legenda
+                    true, // Exibir tooltips
+                    false // URLs de navegação
+            );
+
+            jPanelGraficoBarras.removeAll();
+            ChartPanel chartPanel = new ChartPanel(chart);
+            jPanelGraficoBarras.setLayout(new BorderLayout());
+            jPanelGraficoBarras.add(chartPanel, BorderLayout.CENTER);
+            jPanelGraficoBarras.validate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    
+    }
+    
     private void updateTable() {
         try {
             String sql = "SELECT Sobrenome_Familia AS \"Sobrenome da Família\", Endereco_Familia AS \"Endereço\", Telefone_Familia AS \"Contato\" FROM Familias WHERE Ativo = 1";
@@ -102,14 +151,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jPanelGraficoBarras.setLayout(jPanelGraficoBarrasLayout);
         jPanelGraficoBarrasLayout.setHorizontalGroup(
             jPanelGraficoBarrasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 592, Short.MAX_VALUE)
+            .addGap(0, 488, Short.MAX_VALUE)
         );
         jPanelGraficoBarrasLayout.setVerticalGroup(
             jPanelGraficoBarrasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 340, Short.MAX_VALUE)
+            .addGap(0, 352, Short.MAX_VALUE)
         );
 
-        btnGerarGraficos.setText("jButton1");
+        btnGerarGraficos.setText("Atualizar Dados");
         btnGerarGraficos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGerarGraficosActionPerformed(evt);
@@ -121,53 +170,50 @@ public class TelaPrincipal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(BtnDoar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnCadastrarFamilia))
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addComponent(jPanelGraficoBarras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnGerarGraficos)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(29, 29, 29)
-                                .addComponent(lbUsuarioAtivo)))))
-                .addGap(49, 49, 49))
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(29, 29, 29)
+                        .addComponent(lbUsuarioAtivo)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel3)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(BtnDoar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCadastrarFamilia))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(btnGerarGraficos, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanelGraficoBarras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(211, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
-                .addGap(50, 50, 50)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(BtnDoar)
                             .addComponent(btnCadastrarFamilia))
-                        .addGap(64, 64, 64)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnGerarGraficos))
-                    .addComponent(jPanelGraficoBarras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanelGraficoBarras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 183, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(lbUsuarioAtivo))
@@ -199,46 +245,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCadastrarFamiliaActionPerformed
 
     private void btnGerarGraficosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGerarGraficosActionPerformed
-        try {
-            String sql = "SELECT a.Nome_Alimento, SUM(l.Qtd_List_int_Doacao) AS Quantidade " +
-                         "FROM Alimentos a " +
-                         "JOIN Lista_Int_Doacao l ON a.ID_Alimento = l.ID_Alimento_List_Int_Doacao " +
-                         "JOIN Transacao_Rec_Int_Doacao t ON l.ID_Int_Doacao_List = t.ID_Int_Doacao_Transac_Rec " +
-                         "GROUP BY a.Nome_Alimento";
 
-            pst = con.prepareStatement(sql);
-            rs = pst.executeQuery();
-
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-            while (rs.next()) {
-                String nomeAlimento = rs.getString("Nome_Alimento");
-                int quantidade = rs.getInt("Quantidade");
-                dataset.addValue(quantidade, "Quantidade", nomeAlimento);
-            }
-
-            JFreeChart chart = ChartFactory.createBarChart(
-                    "Gráfico de Barras", // Título do gráfico
-                    "Alimento", // Rótulo do eixo X
-                    "Quantidade", // Rótulo do eixo Y
-                    dataset, // Conjunto de dados
-                    PlotOrientation.VERTICAL, // Orientação do gráfico
-                    true, // Exibir legenda
-                    true, // Exibir tooltips
-                    false // URLs de navegação
-            );
-
-            jPanelGraficoBarras.removeAll();
-            ChartPanel chartPanel = new ChartPanel(chart);
-            jPanelGraficoBarras.setLayout(new BorderLayout());
-            jPanelGraficoBarras.add(chartPanel, BorderLayout.CENTER);
-            jPanelGraficoBarras.validate();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
-
-        
-        
+        AtualizarGraficoAlimentos();
+        updateTable();
+              
     }//GEN-LAST:event_btnGerarGraficosActionPerformed
 
     /**
