@@ -174,7 +174,7 @@ public class TelaDoar extends javax.swing.JFrame {
     
     private void updateTableListaAlimentos(){
         try {
-            String sql = "select a.Nome_Alimento, lista.Qtd_List_int_Doacao , a.Unidade_Medida_Alimento from Lista_Int_Doacao lista, Intencao_Doacao int, Alimentos a WHERE a.ID_Alimento = lista.ID_Alimento_List_Int_Doacao AND int.ID_Usuario_Int_Doacao like ? AND int.ID_Int_Doacao = lista.ID_Int_Doacao_List AND lista.ID_Int_Doacao_List LIKE ? AND int.Ativo = 1;";
+            String sql = "select a.Nome_Alimento, lista.Qtd_List_int_Doacao , a.Unidade_Medida_Alimento from Lista_Int_Doacao lista, Intencao_Doacao int, Alimentos a WHERE a.ID_Alimento = lista.ID_Alimento_List_Int_Doacao AND int.ID_Usuario_Int_Doacao like ? AND int.ID_Int_Doacao = lista.ID_Int_Doacao_List AND int.Ativo = 1;";
             pst = con.prepareStatement(sql);
             pst.setString(1, IdUsuarioAtivo);
             rs = pst.executeQuery();
@@ -615,16 +615,17 @@ public class TelaDoar extends javax.swing.JFrame {
     private void btnAtualizarListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtualizarListaActionPerformed
         
         String listaSelecionada = jComboBoxIDLista.getSelectedItem().toString();
-        updateTableSelecionado(listaSelecionada);
+        
         if (listaSelecionada.equals("Todas")) {  // Usando o .equals() para comparar strings
             btnAdicionarParaLista.setEnabled(false);
             btnExcluirLista.setEnabled(false);
             btnDoarParaFamilia.setEnabled(false);
+            updateTableListaAlimentos();
         } else {
             btnAdicionarParaLista.setEnabled(true);
             btnExcluirLista.setEnabled(true);
             btnDoarParaFamilia.setEnabled(true);
-
+            updateTableSelecionado(listaSelecionada);
         }
 
     }//GEN-LAST:event_btnAtualizarListaActionPerformed

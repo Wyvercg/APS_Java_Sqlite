@@ -317,7 +317,7 @@ public class TelaCadastro extends javax.swing.JFrame {
 
                 //con.commit(); // Confirma a transação
 
-                JOptionPane.showMessageDialog(null, "Cadastro Adicionado com Sucesso nas duas Tabelas","Alerta",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Cadastro Adicionado com Sucesso","Alerta",JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e) {
                 try {
                     con.rollback(); // Reverte a transação em caso de erro
@@ -334,7 +334,9 @@ public class TelaCadastro extends javax.swing.JFrame {
                     }
 
             }
+            this.dispose();
         
+            
         }else{
             JOptionPane.showMessageDialog(null, "Senha falhou no teste de verificação, senhas diferentes foram digitadas, favor repita a senha","Alerta",JOptionPane.INFORMATION_MESSAGE);
         }   
