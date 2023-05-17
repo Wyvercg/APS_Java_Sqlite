@@ -21,7 +21,50 @@ public class TelaLogin extends javax.swing.JFrame {
         con = ConnectionApsDB.ConnectionDB();
     }
     
+    private void ArmazenarLogin(){
+        try {
+            String sql = "SELECT * FROM Usuario WHERE Login_Usuario LIKE ? AND Senha_Usuario LIKE ?;";
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setString(1, txtUsuario.getText());
+                pst.setString(2, txtPassword.getText());
+                try (ResultSet rs = pst.executeQuery()) {
+                    System.out.println(rs);
+                    if (rs.next()) {
+                        String sql2 = "SELECT ID_Usuario FROM Usuario WHERE Login_Usuario LIKE ?;";
+                        try (PreparedStatement pst2 = con.prepareStatement(sql2)) {
+                            pst2.setString(1, txtUsuario.getText());
+                            try (ResultSet rs2 = pst2.executeQuery()) {
+                                if (rs2.next()) {
+                                    int idUsuario = rs2.getInt("ID_Usuario");
+                                    Main.IdUsuario = String.valueOf(idUsuario);
+                                }
+                            }
+                        } catch (Exception e) {
+                            // Trate a exceção apropriadamente
+                        }
+
+                        String usuarioDigitado = txtUsuario.getText();
+                        Main.Usuario = usuarioDigitado;
+
+                        TelaPrincipal TP = new TelaPrincipal();
+                        TP.setVisible(true);
+                        JOptionPane.showMessageDialog(null, "Login bem sucedido");
+                        TelaLogin.this.dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Login falhou, verifique seus dados e tente novamente");
+                    }
+                }
+            } catch (Exception e) {
+                // Trate a exceção apropriadamente
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro no login: " + e.getMessage());
+            e.printStackTrace();
+        }
+
     
+    
+    }
     
 
     @SuppressWarnings("unchecked")
@@ -111,46 +154,7 @@ public class TelaLogin extends javax.swing.JFrame {
 
     private void loginbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginbuttonActionPerformed
         
-    try {
-        String sql = "SELECT * FROM Usuario WHERE Login_Usuario LIKE ? AND Senha_Usuario LIKE ?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, txtUsuario.getText());
-            pst.setString(2, txtPassword.getText());
-            try (ResultSet rs = pst.executeQuery()) {
-                System.out.println(rs);
-                if (rs.next()) {
-                    String sql2 = "SELECT ID_Usuario FROM Usuario WHERE Login_Usuario LIKE ?;";
-                    try (PreparedStatement pst2 = con.prepareStatement(sql2)) {
-                        pst2.setString(1, txtUsuario.getText());
-                        try (ResultSet rs2 = pst2.executeQuery()) {
-                            if (rs2.next()) {
-                                int idUsuario = rs2.getInt("ID_Usuario");
-                                Main.IdUsuario = String.valueOf(idUsuario);
-                            }
-                        }
-                    } catch (Exception e) {
-                        // Trate a exceção apropriadamente
-                    }
-
-                    String usuarioDigitado = txtUsuario.getText();
-                    Main.Usuario = usuarioDigitado;
-
-                    TelaPrincipal TP = new TelaPrincipal();
-                    TP.setVisible(true);
-                    JOptionPane.showMessageDialog(null, "Login bem sucedido");
-                    TelaLogin.this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Login falhou, verifique seus dados e tente novamente");
-                }
-            }
-        } catch (Exception e) {
-            // Trate a exceção apropriadamente
-        }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Erro no login: " + e.getMessage());
-        e.printStackTrace();
-    }
- 
+        ArmazenarLogin();
 
 
 
